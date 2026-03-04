@@ -111,7 +111,7 @@ def add_route(df, num_route, transport_type, dep_point, arr_point, dep_time, arr
     return df
 
 
-def remove_route(df, num_route):
+def remove_route(df, num_route): # удаление маршрута
     mask = df['Номер маршрута'] == num_route
     delete = df[mask]
     if delete.empty:
@@ -122,6 +122,34 @@ def remove_route(df, num_route):
     print('Маршрут удалён')
     return df
 
+def search_routes(df): #реализация функции поиска
+    print("\nПоиск маршрутов:")
+    print("1 - По пункту отправления")
+    print("2 - По пункту прибытия")
+    print("3 - По типу транспорта")
+    choice = input("Ваш выбор: ")
+    if choice == "1":
+        print('Список городов:', city_list)
+        city = input("Введите пункт отправления: ")
+        result = df[df['Пункт отправления'] == city]
+    if choice == "2":
+        print('Список городов:', city_list)
+        city = input("Введите пункт прибытия: ")
+        result = df[df['Пункт прибытия'] == city]
+    if choice == "3":
+        print("Виды транспорта:", transport_type_list)
+        t = input("Введите тип транспорта (Поезд/Автобус/Электричка/Трамвай): ")
+        result = df[df['Тип транспорта'] == t]
+    if (choice != "1") & (choice != "2") & (choice != "3") & (choice != "0"):
+        print('Неизвестная команда')
+        return
+
+    if result.empty:
+        print('Маршруты по заданным условиям отсутствуют')
+    else:
+        print ('Найденные маршруты:')
+        print(result)
+
 
 def menu(df):  # меню
     while True:
@@ -129,6 +157,7 @@ def menu(df):  # меню
         print("1 - Показать расписание")
         print("2 - Добавить маршрут")
         print("3 - Удалить маршрут")
+        print("4 - Выполнить поиск маршрутов")
         print("0 - Выход")
         choice = input("Ваш выбор: ")
 
@@ -188,11 +217,14 @@ def menu(df):  # меню
 
             df = remove_route(df, num_route)
 
+        if choice == "4":
+            search_routes(df)
+
         if choice == "0":
             print("Выход")
             break
-            
-        if (choice != "1") & (choice != "2") & (choice != "3") & (choice != "0"):
+
+        if (choice != "1") & (choice != "2") & (choice != "3") & (choice!="4") & (choice != "0"):
             print('Неизвестная команда')
 
     return df
