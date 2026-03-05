@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
-import logging
 import os
 import random
 
@@ -283,6 +282,59 @@ def show_trans(df):
         print("Маршруты с выбранным видом транспорта: ")
         print(result)
 
+def diag_1(df):
+    avg = df.groupby('Тип транспорта')['Продолжительность, мин'].mean()
+    if avg.empty:
+        print("Нет данных для построения диаграммы")
+        return
+    plt.figure(figsize=(7, 3))
+    plt.bar(avg.index, avg.values, color='red')
+    plt.xlabel('Тип транспорта')
+    plt.ylabel('Средняя продолжительность, мин')
+    plt.grid(axis='y', alpha=0.3)
+    plt.tight_layout()
+    plt.savefig("diag1.png")
+    print("Диаграмма сохранена в файл")
+    plt.show()
+
+def diag_2(df):
+    full = (df['Количество мест'] - df['Свободно мест']) / df['Количество мест'] * 100
+    if full.empty:
+        print("Нет данных для построения диаграммы")
+        return
+    plt.figure(figsize=(7, 3))
+    x = range(len(df))
+    plt.bar(x, full.values, color='red')
+    plt.xlabel('Индекс маршрута')
+    plt.ylabel('Заполненность, %')
+    plt.grid(axis='y', alpha=0.3)
+    plt.tight_layout()
+    plt.savefig("diag2.png")
+    print("Диаграмма сохранена в файл")
+    plt.show()
+
+def gr_1(df):
+    print("Список городов:", city_list)
+    a = input("Введите пункт отправления: ")
+    if a not in city_list:
+        print("Такого города нет в списке")
+        return
+    a1 = df[df['Пункт отправления'] == a]
+    if a1.empty:
+        print("Маршрутов из этого пункта отправления нет")
+        return
+    k=a1['Пункт прибытия'].value_counts()
+
+    plt.figure(figsize=(7, 4))
+    plt.bar(k.index, k.values, color='red')
+    plt.xlabel('Пункт прибытия')
+    plt.ylabel('Количество маршрутов')
+    plt.xticks(rotation=30, ha='right')
+    plt.tight_layout()
+    plt.savefig("gr1.png")
+    print("График сохранен в файл")
+    plt.show()
+
 def menu(df):  # меню
     while True:
         print("\nМеню:")
@@ -295,6 +347,9 @@ def menu(df):  # меню
         print ('7 - Показать статистику')
         print ('8 - Сортировка')
         print ('9 - Показать маршруты по виду транспорта')
+        print ('10 - Вывести диаграмму средней продолжительности по видам транспорта')
+        print ('11 - Вывести диаграмму заполненности маршрутов в процентах')
+        print ('12 - Вывести график пунктов приема для конкретного пункта отправки')
         print("0 - Выход")
         choice = input("Ваш выбор: ")
 
@@ -372,12 +427,21 @@ def menu(df):  # меню
         if choice == "9":
             show_trans(df)
 
+        if choice == "10":
+            diag_1(df)
+
+        if choice == '11':
+            diag_2(df)
+
+        if choice == '12':
+            gr_1(df)
+
         if choice == "0":
             print("Выход")
             break
 
         if (choice != "1") & (choice != "2") & (choice != "3") & (choice!="4") & (choice!="5") & (choice!="6") &\
-                (choice!="7") & (choice!="8") & (choice!="9") & (choice != "0"):
+                (choice!="7") & (choice!="8") & (choice!="9") & (choice!="10")  & (choice!="11")  & (choice!="12") & (choice != "0"):
             print('Неизвестная команда')
 
     return df
