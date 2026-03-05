@@ -253,6 +253,23 @@ def stats (df): #выводим статистику
     top = df.sort_values('Продолжительность, мин', ascending=False).head(3)
     print(top)
 
+def sortirovka (df): #сортировка по возрастанию/убыванию
+    print ('Выберите вариант сортировки')
+    print ('1 - по возрастанию')
+    print ('2 - по убыванию')
+    choice = input('Ваш выбор:')
+
+    if (choice == "1"):
+        sorted = df.sort_values('Продолжительность, мин', ascending=True)
+    if (choice == "2"):
+        sorted = df.sort_values('Продолжительность, мин', ascending=False)
+    if (choice != "1") & (choice != "2"):
+        print ('Выбрана неизвестная команда')
+        return df
+
+    print (sorted)
+    return df
+
 
 def menu(df):  # меню
     while True:
@@ -264,6 +281,7 @@ def menu(df):  # меню
         print('5 - Купить билет')
         print('6 - Найти маршруты в движении')
         print ('7 - Показать статистику')
+        print ('8 - Сортировка')
         print("0 - Выход")
         choice = input("Ваш выбор: ")
 
@@ -335,11 +353,14 @@ def menu(df):  # меню
         if choice == "7":
             stats(df)
 
+        if choice == "8":
+            df = sortirovka(df)
+
         if choice == "0":
             print("Выход")
             break
 
-        if (choice != "1") & (choice != "2") & (choice != "3") & (choice!="4") & (choice!="5") & (choice!="6") & (choice!="7") & (choice != "0"):
+        if (choice != "1") & (choice != "2") & (choice != "3") & (choice!="4") & (choice!="5") & (choice!="6") & (choice!="7") & (choice!="8") & (choice != "0"):
             print('Неизвестная команда')
 
     return df
