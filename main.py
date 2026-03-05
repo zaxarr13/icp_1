@@ -58,7 +58,7 @@ df = pd.DataFrame({
 
 
 
-def h_to_minutes(t_str):  # перевод из "HH:MM" в минуты
+def h_to_minutes(t_str):  # перевод в минуты
     h, m = map(int, t_str.split(':'))
     return h * 60 + m
 
@@ -71,7 +71,7 @@ def add_route(df, num_route, transport_type, dep_point, arr_point, dep_time, arr
         dep_m = h_to_minutes(dep_time)
         arr_m = h_to_minutes(arr_time)
     except:
-        print("Ошибка формата времени. Используйте HH:MM (например, 09:30).")
+        print("Ошибка формата времени.")
         return df
 
     # учёт возможного перехода через сутки
@@ -188,6 +188,30 @@ def buy_ticket(df): #функция покупки билетов
             print(alt)
         return df
 
+def move_routes(df):
+    t_str = input("Введите время (HH:MM): ")
+    try:
+        t = h_to_minutes(t_str)
+    except:
+        print("Ошибка формата времени.")
+        return
+
+    dep_m = df['Время отправления'].apply(h_to_minutes)
+    arr_m = df['Время прибытия'].apply(h_to_minutes)
+
+    arr_m1 = arr_m.copy()
+    mask1 = arr_m1 <= dep_m
+    arr_m1[mask1] = arr_m1[mask1] + 1440
+
+    mask = (dep_m <= t) & (t < arr_m1)
+    result = df[mask]
+
+    if result.empty:
+        print('В указанный момент времени ни один из маршрутов не находится в движении')
+    else:
+        print('Маршруты, которые находятся в пути:')
+        print(result)
+
 def menu(df):  # меню
     while True:
         print("\nМеню:")
@@ -196,6 +220,7 @@ def menu(df):  # меню
         print("3 - Удалить маршрут")
         print("4 - Выполнить поиск маршрутов")
         print('5 - Купить билет')
+        print('6 - Найти маршруты в движении')
         print("0 - Выход")
         choice = input("Ваш выбор: ")
 
@@ -261,11 +286,14 @@ def menu(df):  # меню
         if choice == "5":
             df = buy_ticket(df)
 
+        if choice == "6":
+            move_routes(df)
+
         if choice == "0":
             print("Выход")
             break
 
-        if (choice != "1") & (choice != "2") & (choice != "3") & (choice!="4") & (choice!="5") &(choice != "0"):
+        if (choice != "1") & (choice != "2") & (choice != "3") & (choice!="4") & (choice!="5") & (choice!="6") & (choice != "0"):
             print('Неизвестная команда')
 
     return df
