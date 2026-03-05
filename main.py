@@ -395,6 +395,12 @@ def gr_1(df):
     log_action('График gr1.png сохранен')
     plt.show()
 
+def save_csv(df):
+    filename='result.csv'
+    df.to_csv(filename,index=False)
+    print('Данные сохранены в файл result.csv')
+    log_action('Состояние базы данных сохранено в файл result.csv')
+
 def menu(df):  # меню
     log_action("Открыто главное меню")
     while True:
@@ -411,6 +417,7 @@ def menu(df):  # меню
         print ('10 - Вывести диаграмму средней продолжительности по видам транспорта')
         print ('11 - Вывести диаграмму заполненности маршрутов в процентах')
         print ('12 - Вывести график пунктов приема для конкретного пункта отправки')
+        print ('13 - Сохранить текущее расписание в CSV')
         print("0 - Выход")
         choice = input("Ваш выбор: ")
 
@@ -508,13 +515,16 @@ def menu(df):  # меню
         if choice == '12':
             gr_1(df)
 
+        if choice == '13':
+            save_csv(df)
+
         if choice == "0":
             print("Выход")
             log_action('Совершен выход из программы пользователем')
             break
 
         if (choice != "1") & (choice != "2") & (choice != "3") & (choice!="4") & (choice!="5") & (choice!="6") &\
-                (choice!="7") & (choice!="8") & (choice!="9") & (choice!="10")  & (choice!="11")  & (choice!="12") & (choice != "0"):
+                (choice!="7") & (choice!="8") & (choice!="9") & (choice!="10")  & (choice!="11")  & (choice!="12")  & (choice!="13") & (choice != "0"):
             print('Неизвестная команда')
             log_action('При открытии меню была введена неизвестная команда - ' + choice)
 
