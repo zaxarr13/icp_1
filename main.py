@@ -212,6 +212,48 @@ def move_routes(df):
         print('Маршруты, которые находятся в пути:')
         print(result)
 
+def stats (df): #выводим статистику
+    print ('Статистика:')
+    #1
+    print ('Среднее время в пути по виду транспорта:')
+    avg = df.groupby('Тип транспорта')['Продолжительность, мин'].mean()
+    for i, j in avg.items(): # убрал стандартный принт, чтобы не выводилась справочная информация из модуля Pandas
+        print(i, "-", j)
+
+    #2
+    print ('Средняя цена за маршрут:')
+    avg = df['Цена билета'].mean()
+    print ('Средняя цена билета:', avg)
+
+    #3
+    print ('Маршруты с наполненостью <X%:')
+    try:
+        x = float(input("Введите X: "))
+    except ValueError:
+        print("Некорректное значение X")
+        return
+    full = (df['Количество мест'] - df['Свободно мест']) / df['Количество мест'] * 100
+    low = df[full<x]
+    if low.empty:
+        print("Маршрутов с заполненностью <", x, "% нет")
+    else:
+        print("Маршруты с заполненностью <", x, "%:")
+        print(low)
+
+    #4
+    print('Самый частый вид транспорта за день:')
+    k=df['Тип транспорта'].value_counts()
+    if k.empty:
+        print("Самый частый вид транспорта за день отсутствует")
+    else:
+        print("Самый частый вид транспорта:", k.idxmax())
+
+    #5
+    print ("Топ-3 самых долгих маршрута")
+    top = df.sort_values('Продолжительность, мин', ascending=False).head(3)
+    print(top)
+
+
 def menu(df):  # меню
     while True:
         print("\nМеню:")
@@ -221,6 +263,7 @@ def menu(df):  # меню
         print("4 - Выполнить поиск маршрутов")
         print('5 - Купить билет')
         print('6 - Найти маршруты в движении')
+        print ('7 - Показать статистику')
         print("0 - Выход")
         choice = input("Ваш выбор: ")
 
@@ -289,11 +332,14 @@ def menu(df):  # меню
         if choice == "6":
             move_routes(df)
 
+        if choice == "7":
+            stats(df)
+
         if choice == "0":
             print("Выход")
             break
 
-        if (choice != "1") & (choice != "2") & (choice != "3") & (choice!="4") & (choice!="5") & (choice!="6") & (choice != "0"):
+        if (choice != "1") & (choice != "2") & (choice != "3") & (choice!="4") & (choice!="5") & (choice!="6") & (choice!="7") & (choice != "0"):
             print('Неизвестная команда')
 
     return df
