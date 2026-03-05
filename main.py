@@ -150,6 +150,43 @@ def search_routes(df): #реализация функции поиска
         print ('Найденные маршруты:')
         print(result)
 
+def buy_ticket(df): #функция покупки билетов
+    try:
+        num_route = int(input("Номер маршрута: "))
+    except ValueError:
+        print("Номер маршрута должен быть числом.")
+        return df
+    mask = (df['Номер маршрута'] == num_route)
+    c = df[mask]
+    if c.empty:
+        print("Маршрут с такими параметрами не найден.")
+        return df
+
+    i=c.index[0]
+
+    if df.at[i, 'Свободно мест'] > 0:
+        df.at[i, 'Свободно мест'] -= 1
+        price = df.at[i, 'Цена билета']
+        print("Билет куплен. Цена билета - ", price)
+        print(df.loc[[i]])
+        return df
+
+    if df.at[i, 'Свободно мест'] == 0:
+        print("Свободных мест на выбранный маршрут нет.")
+        dep_point = df.at[i, 'Пункт отправления']
+        arr_point = df.at[i, 'Пункт прибытия']
+        alt = df[
+        (df['Пункт отправления'] == dep_point) &
+        (df['Пункт прибытия'] == arr_point) &
+        (df['Свободно мест'] > 0) &
+        (df.index != i)
+            ]
+        if alt.empty:
+            print("Альтернативные маршруты отсутствуют.")
+        else:
+            print("Доступные альтернативные маршруты:")
+            print(alt)
+        return df
 
 def menu(df):  # меню
     while True:
@@ -158,11 +195,12 @@ def menu(df):  # меню
         print("2 - Добавить маршрут")
         print("3 - Удалить маршрут")
         print("4 - Выполнить поиск маршрутов")
+        print('5 - Купить билет')
         print("0 - Выход")
         choice = input("Ваш выбор: ")
 
         if choice == "1":
-            print("\nТекущее расписание:")
+            print("Текущее расписание:")
             print(df)
 
         if choice == "2":
@@ -220,11 +258,14 @@ def menu(df):  # меню
         if choice == "4":
             search_routes(df)
 
+        if choice == "5":
+            df = buy_ticket(df)
+
         if choice == "0":
             print("Выход")
             break
 
-        if (choice != "1") & (choice != "2") & (choice != "3") & (choice!="4") & (choice != "0"):
+        if (choice != "1") & (choice != "2") & (choice != "3") & (choice!="4") & (choice!="5") &(choice != "0"):
             print('Неизвестная команда')
 
     return df
